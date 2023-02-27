@@ -1,0 +1,35 @@
+[user]
+	name = kento.toriumi
+	email = kento.toriumi@gmail.com
+
+[alias]
+# use 'git h <command>' for help, use 'git la' to list aliases  =====
+#
+
+# alias	=====
+alias	=	"!grep '\t=' ~/.gitconfig | less" # xxx
+al	=	!git alias
+
+# commit	=====
+cm	=	commit -m
+
+# status        =====
+st      =       status
+
+# branch        =====
+br	=	branch
+bra	=	branch -a -vv
+co	=	checkout
+
+# stash	=====
+sh	=	stash
+
+# log	=====
+graph	=	log --graph --date=short --decorate=short --pretty=format:'%Cgreen%h %Creset%cd %Cblue%cn %Cred%d %Creset%s'
+gr	=	!git graph
+
+# cherry-pick	=====
+cp	=	cherry-pick
+
+[ghq]
+	root = ~/ghq
