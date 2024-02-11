@@ -16,8 +16,6 @@ for f in .??*; do
     ln -snfv ${THIS_DIR}/"$f" ~/
 done
 
-# [ -e ~/.gitconfig.local ] || cp ~/dotfiles/.gitconfig.local.template ~/.gitconfig.local
-
 # emacs set up
 if which cask >/dev/null 2>&1; then
   echo "setup .emacs.d..."
@@ -29,7 +27,9 @@ fi
 cat << END
 
 **************************************************
-DOTFILES SETUP FINISHED! bye.
+***  Dotfiles Setup Finished! Restart Shell... ***
 **************************************************
 
 END
+
+exec $SHELL -l

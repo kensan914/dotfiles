@@ -77,7 +77,7 @@ EOF
 
 # ghqとの連携。ghqの管理化にあるリポジトリを一覧表示する。ctrl+Gにバインド。
 function ghq-fzf() {
-  local src=$(ghq list | fzf --preview "bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*")
+  local src=$(ghq list | fzf --header 'cd ${Any GihHub Repository}!!!' --preview "bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*")
   if [ -n "$src" ]; then
     BUFFER="cd $(ghq root)/$src"
     zle accept-line
@@ -86,6 +86,18 @@ function ghq-fzf() {
 }
 zle -N ghq-fzf
 bindkey '^g' ghq-fzf
+
+# ghqで管理しているリポジトリをIntelliJ IDEAで開く。ctrl+Iにバインド。
+function open-intellij-with-ghq-fzf() {
+  local src=$(ghq list | fzf --header 'open IntelliJ IDEA ${Any GihHub Repository}!!!' --preview "bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*")
+  if [ -n "$src" ]; then
+    BUFFER="idea $(ghq root)/$src"
+    zle accept-line
+  fi
+  zle -R -c
+}
+zle -N open-intellij-with-ghq-fzf
+bindkey '^i' open-intellij-with-ghq-fzf
 
 docker-exec() {
   local cid
