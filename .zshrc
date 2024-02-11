@@ -16,6 +16,7 @@ alias g="git"
 alias d="docker"
 alias dc="docker-compose"
 alias ll="ls -l"
+alias la="ls -al"
 
 # コマンドの結果を標準出力しつつクリップボードにもコピーする
 # ex) echo 'Hello, World!' | teee
@@ -63,13 +64,16 @@ setopt share_history
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 export FZF_DEFAULT_OPTS="--height 40% --layout=reverse --preview 'bat -n --color=always {}'"
 export FZF_CTRL_T_OPTS="--bind 'ctrl-/:change-preview-window(down|hidden|)'"
-export FZF_CTRL_R_OPTS="
-  --layout=reverse
-  --preview 'echo {}' --preview-window up:3:hidden:wrap
-  --bind 'ctrl-/:toggle-preview'
-  --bind 'ctrl-y:execute-silent(echo -n {2..} | pbcopy)+abort'
-  --color header:italic
-  --header 'Press CTRL-Y to copy command into clipboard'"
+export FZF_CTRL_R_OPTS=$(cat <<"EOF"
+--height 60%
+--preview '
+  echo {} \
+  | awk "{ sub(/\s*[0-9]*?\s*/, \"\"); gsub(/\\\\n/, \"\\n\"); print }" \
+  | bat --color=always --language=sh --style=plain
+'
+--preview-window 'down,40%,wrap'
+EOF
+)
 
 # ghqとの連携。ghqの管理化にあるリポジトリを一覧表示する。ctrl+Gにバインド。
 function ghq-fzf() {
@@ -83,29 +87,37 @@ function ghq-fzf() {
 zle -N ghq-fzf
 bindkey '^g' ghq-fzf
 
-dce() {
+docker-exec() {
   local cid
-  cid=$(docker-compose ps | sed 1d | fzf -q "$1" | awk '{print $1}')
+  cid=$(docker ps --format 'table {{ .Names }}\t{{ .Status }}\t{{ .ID }}' | fzf --header-lines=1 --select-1 --preview-window hidden -q "$1" | awk '{print $1}')
   [ -n "$cid" ] && docker exec -it "$cid" bash
 }
-dcm() {
-  local cid
-  cid=$(docker-compose ps | sed 1d | fzf -q "$1" | awk '{print $1}')
-  [ -n "$cid" ] && docker exec -it "$cid" python manage.py $1
+alias de="docker-exec"
+docker-test() {
+  local file
+  file=$(fzf -q "$1" | awk '{print $1}')
+  docker exec -it fullfii_app python -m pytest "$file"
+  print -s "docker exec -it fullfii_app python -m pytest $file"
 }
-# docker-compose logsにする。複数選択可能にする。
-dcl() {
+alias dt="docker-test"
+docker-logs() {
   local cid
-  cid=$(docker-compose ps -a | sed 1d | fzf -q "$1" | awk '{print $1}')
+  cid=$(docker ps --format 'table {{ .Names }}\t{{ .Status }}\t{{ .ID }}' | fzf --header-lines=1 --select-1 --preview-window hidden -q "$1" | awk '{print $1}')
   [ -n "$cid" ] && docker logs -f --tail=200 "$cid"
 }
-dcr() {
+alias dl="docker-logs"
+docker-restart() {
   local cid
-  cid=$(docker-compose ps -a | sed 1d | fzf -m -q "$1" | awk '{print $1}')
-  [ -n "$cid" ] && echo $cid | xargs docker restart
+  cid=$(docker ps --format 'table {{ .Names }}\t{{ .Status }}\t{{ .ID }}' | fzf --header-lines=1 --select-1 --preview-window hidden -m --header '[multi select mode]: TAB or SHIFT+TAB' -q "$1" | awk '{print $1}')
+  revolver --style 'bouncingBall' start '  restarting...'
+  [ -n "$cid" ] && xargs docker restart <<< $cid && echo $cid has been restarted!!
+  revolver stop
 }
+alias dr="docker-restart"
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
+
+export REACT_EDITOR="code"
 
 # Fig post block. Keep at the bottom of this file.
 [[ -f "$HOME/.fig/shell/zshrc.post.zsh" ]] && builtin source "$HOME/.fig/shell/zshrc.post.zsh"

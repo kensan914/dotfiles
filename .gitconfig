@@ -12,6 +12,11 @@ al	=	!git alias
 
 # commit	=====
 cm	=	commit -m
+ca	=	commit --amend
+
+# push	=====
+p	=	push
+pf	=	push --force-with-lease
 
 # status        =====
 st      =       status
@@ -30,6 +35,12 @@ gr	=	!git graph
 
 # cherry-pick	=====
 cp	=	cherry-pick
+
+#	rebase	=====
+rb	=	rebase
+
+#	reset	=====
+
 
 [ghq]
 	root = ~/ghq
