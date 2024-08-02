@@ -23,8 +23,12 @@ st      =       status
 
 # branch        =====
 br	=	branch
-bra	=	branch -a -vv
-co	=	checkout
+br-all  = branch -a -vv
+br-current  = branch --show-current
+
+# switch        =====
+sw  =  switch
+swc =  switch -c
 
 # stash	=====
 sh	=	stash
