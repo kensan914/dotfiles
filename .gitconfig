@@ -11,8 +11,10 @@ alias	=	"!grep '\t=' ~/.gitconfig | less" # xxx
 al	=	!git alias
 
 # commit	=====
+c	=	commit
 cm	=	commit -m
 ca	=	commit --amend
+c-empty  =	commit --allow-empty
 
 # push	=====
 p	=	push
@@ -22,28 +24,21 @@ pf	=	push --force-with-lease
 st      =       status
 
 # branch        =====
-br	=	branch
-br-all  = branch -a -vv
-br-current  = branch --show-current
+b	=	branch
+b-all  = branch -a -vv
+b-current  = branch --show-current
 
 # switch        =====
 sw  =  switch
-swc =  switch -c
-
-# stash	=====
-sh	=	stash
 
 # log	=====
 graph	=	log --graph --date=short --decorate=short --pretty=format:'%Cgreen%h %Creset%cd %Cblue%cn %Cred%d %Creset%s'
 gr	=	!git graph
 
-# cherry-pick	=====
-cp	=	cherry-pick
-
-#	rebase	=====
-rb	=	rebase
-
 #	reset	=====
+
+#	fetch	=====
+f	=	fetch -v
 
 
 [ghq]

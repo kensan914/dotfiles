@@ -13,7 +13,7 @@ import "${HOME}/.zsh"
 alias g="git"
 # compdef g=git
 alias d="docker"
-alias dc="docker-compose"
+alias dc="docker compose"
 alias ll="ls -l"
 alias la="ls -al"
 
@@ -86,7 +86,7 @@ function ghq-fzf() {
 zle -N ghq-fzf
 bindkey '^g' ghq-fzf
 
-# ghqで管理しているリポジトリをIntelliJ IDEAで開く。ctrl+Iにバインド。
+# ghqで管理しているリポジトリをIntelliJ IDEAで開く
 function open-intellij-with-ghq-fzf() {
   local src=$(ghq list | fzf --header 'open IntelliJ IDEA ${Any GihHub Repository}!!!' --preview "bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*")
   if [ -n "$src" ]; then
@@ -96,35 +96,36 @@ function open-intellij-with-ghq-fzf() {
   zle -R -c
 }
 zle -N open-intellij-with-ghq-fzf
-bindkey '^i' open-intellij-with-ghq-fzf
+alias i="open-intellij-with-ghq-fzf"
 
-docker-exec() {
+docker-compose-exec() {
   local cid
-  cid=$(docker ps --format 'table {{ .Names }}\t{{ .Status }}\t{{ .ID }}' | fzf --header-lines=1 --select-1 --preview-window hidden -q "$1" | awk '{print $1}')
-  [ -n "$cid" ] && docker exec -it "$cid" bash
+  cid=$(docker compose ps --format 'table {{ .Service }}\t{{ .Status }}\t{{ .ID }}\t{{ .Ports }}' | fzf --header-lines=1 --select-1 --preview-window hidden -q "$1" --header 'docker compose exec ${Any Docker Compose Service} bash!!!' | awk '{print $1}')
+  [ -n "$cid" ] && docker compose exec "$cid" bash
 }
-alias de="docker-exec"
-docker-test() {
-  local file
-  file=$(fzf -q "$1" | awk '{print $1}')
-  docker exec -it fullfii_app python -m pytest "$file"
-  print -s "docker exec -it fullfii_app python -m pytest $file"
-}
-alias dt="docker-test"
-docker-logs() {
+alias de="docker-compose-exec"
+docker-compose-logs() {
   local cid
-  cid=$(docker ps --format 'table {{ .Names }}\t{{ .Status }}\t{{ .ID }}' | fzf --header-lines=1 --select-1 --preview-window hidden -q "$1" | awk '{print $1}')
-  [ -n "$cid" ] && docker logs -f --tail=200 "$cid"
+  cid=$(docker compose ps --format 'table {{ .Service }}\t{{ .Status }}\t{{ .ID }}\t{{ .Ports }}' | fzf --header-lines=1 --select-1 --preview-window hidden -q "$1" --header 'docker compose logs -f --tail ${Any Docker Compose Service}!!!' | awk '{print $1}')
+  [ -n "$cid" ] && docker compose logs -f --tail "$cid"
 }
-alias dl="docker-logs"
-docker-restart() {
+alias dl="docker-compose-logs"
+docker-compose-up-d() {
   local cid
-  cid=$(docker ps --format 'table {{ .Names }}\t{{ .Status }}\t{{ .ID }}' | fzf --header-lines=1 --select-1 --preview-window hidden -m --header '[multi select mode]: TAB or SHIFT+TAB' -q "$1" | awk '{print $1}')
-  revolver --style 'bouncingBall' start '  restarting...'
-  [ -n "$cid" ] && xargs docker restart <<< $cid && echo $cid has been restarted!!
+  cid=$(docker compose ps --format 'table {{ .Service }}\t{{ .Status }}\t{{ .ID }}\t{{ .Ports }}' | fzf --header-lines=1 --select-1 --preview-window hidden -m --header 'docker compose up -d ${Any Docker Compose Service}!!! [multi select mode]: TAB or SHIFT+TAB' -q "$1" | awk '{print $1}')
+  revolver --style 'bouncingBall' start '  running...'
+  [ -n "$cid" ] && xargs docker compose up -d <<< $cid && echo $cid has been run!!
   revolver stop
 }
-alias dr="docker-restart"
+alias du="docker-compose-up-d"
+docker-compose-restart() {
+  local cid
+  cid=$(docker compose ps --format 'table {{ .Service }}\t{{ .Status }}\t{{ .ID }}\t{{ .Ports }}' | fzf --header-lines=1 --select-1 --preview-window hidden -m --header 'docker compose restart ${Any Docker Compose Service}!!! [multi select mode]: TAB or SHIFT+TAB' -q "$1" | awk '{print $1}')
+  revolver --style 'bouncingBall' start '  restarting...'
+  [ -n "$cid" ] && xargs docker compose restart <<< $cid && echo $cid has been restarted!!
+  revolver stop
+}
+alias dr="docker-compose-restart"
 
 test -e "${HOME}/.iterm2_shell_integration.zsh" && source "${HOME}/.iterm2_shell_integration.zsh"
 
