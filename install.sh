@@ -16,6 +16,12 @@ for f in .??*; do
     ln -snfv ${THIS_DIR}/"$f" ~/
 done
 
+# ~/.claude 以下の設定ファイルをシンボリックリンク
+mkdir -p ~/.claude
+for f in ${THIS_DIR}/claude/*; do
+    ln -snfv "$f" ~/.claude/
+done
+
 # emacs set up
 if which cask >/dev/null 2>&1; then
   echo "setup .emacs.d..."

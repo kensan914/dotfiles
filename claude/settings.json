@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "terminal-notifier -title 'Claude Code' -message '入力を待っています' -sound 'Funk' -appIcon \"file://$HOME/.claude/icon.webp\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "terminal-notifier -title 'Claude Code' -message '処理が完了しました' -sound 'Bottle' -appIcon \"file://$HOME/.claude/icon.webp\""
+          }
+        ]
+      }
+    ]
+  },
+  "effortLevel": "high",
+  "model": "opus"
+}
