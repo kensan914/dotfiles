@@ -174,3 +174,11 @@ export PATH="$PATH:$GOPATH/bin"
 
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /opt/homebrew/bin/terraform terraform
+
+# Secrets from macOS Keychain (tokens are stored with `security add-generic-password`, never hardcoded)
+_load_keychain_secret() {
+  local service="$1" var="$2"
+  local val
+  val=$(security find-generic-password -a "$USER" -s "$service" -w 2>/dev/null) && export "$var=$val"
+}
+_load_keychain_secret "SUPABASE_ACCESS_TOKEN" "SUPABASE_ACCESS_TOKEN"
