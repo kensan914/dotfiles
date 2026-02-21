@@ -1,0 +1,16 @@
+# Codex CLI ユーザルート設定
+
+# 通知: イベント発生時に notify.sh を実行し terminal-notifier で通知
+# TOML 内では $HOME が展開されないため、bash -c 経由でシェル展開させる
+notify = ["/bin/bash", "-c", "\"$HOME/.codex/notify.sh\" \"$1\"", "_"]
+model = "gpt-5.3-codex"
+model_reasoning_effort = "medium"
+
+[tui]
+notifications = ["agent-turn-complete", "approval-requested"]
+
+[projects."/Users/toriumik/ghq/github.com/LeapWell/bank-gen-ai"]
+trust_level = "trusted"
+
+[projects."/Users/toriumik/ghq/github.com/kensan914/dotfiles"]
+trust_level = "trusted"

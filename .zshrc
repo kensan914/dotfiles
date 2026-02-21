@@ -1,5 +1,6 @@
+# Kiro CLI pre block. Keep at the top of this file.
+[[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.pre.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.pre.zsh"
 # Q pre block. Keep at the top of this file.
-[[ -f "${HOME}/Library/Application Support/amazon-q/shell/zshrc.pre.zsh" ]] && builtin source "${HOME}/Library/Application Support/amazon-q/shell/zshrc.pre.zsh"
 import() {
   if [ -d $1 ] && [ -r $1 ] && [ -x $1 ]; then
     for file in ${1}/**/*.zsh; do
@@ -16,6 +17,9 @@ alias d="docker"
 alias dc="docker compose"
 alias ll="ls -l"
 alias la="ls -al"
+alias co="copilot"
+alias cl="claude"
+alias ge="gemini"
 
 # コマンドの結果を標準出力しつつクリップボードにもコピーする
 # ex) echo 'Hello, World!' | teee
@@ -43,9 +47,9 @@ eval "$(pyenv init -)"
 # mysql-client
 export PATH="/opt/homebrew/opt/mysql-client/bin:$PATH"
 
-# lsコマンドの拡張コマンとexaをエイリアスに設定
-# https://github.com/ogham/exa
-alias ls='exa'
+# lsコマンドの拡張コマンとezaをエイリアスに設定
+# https://github.com/eza-community/eza
+alias ls='eza --icons --header --git --group --time-style=long-iso'
 
 # 履歴保存管理
 HISTFILE=~/.zsh_history
@@ -90,12 +94,9 @@ bindkey '^g' ghq-fzf
 function open-intellij-with-ghq-fzf() {
   local src=$(ghq list | fzf --header 'open IntelliJ IDEA ${Any GihHub Repository}!!!' --preview "bat --color=always --style=header,grid --line-range :80 $(ghq root)/{}/README.*")
   if [ -n "$src" ]; then
-    BUFFER="idea $(ghq root)/$src"
-    zle accept-line
+    idea $(ghq root)/$src
   fi
-  zle -R -c
 }
-zle -N open-intellij-with-ghq-fzf
 alias i="open-intellij-with-ghq-fzf"
 
 docker-compose-exec() {
@@ -164,4 +165,20 @@ export BUN_INSTALL="$HOME/.bun"
 export PATH="$BUN_INSTALL/bin:$PATH"
 
 # Q post block. Keep at the bottom of this file.
-[[ -f "${HOME}/Library/Application Support/amazon-q/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/amazon-q/shell/zshrc.post.zsh"
+# Golang
+export PATH="$GOROOT/bin:$PATH"
+export PATH="$PATH:$GOPATH/bin"
+
+# Kiro CLI post block. Keep at the bottom of this file.
+[[ -f "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh" ]] && builtin source "${HOME}/Library/Application Support/kiro-cli/shell/zshrc.post.zsh"
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /opt/homebrew/bin/terraform terraform
+
+# Secrets from macOS Keychain (tokens are stored with `security add-generic-password`, never hardcoded)
+_load_keychain_secret() {
+  local service="$1" var="$2"
+  local val
+  val=$(security find-generic-password -a "$USER" -s "$service" -w 2>/dev/null) && export "$var=$val"
+}
+_load_keychain_secret "SUPABASE_ACCESS_TOKEN" "SUPABASE_ACCESS_TOKEN"

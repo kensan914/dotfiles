@@ -1,0 +1,28 @@
+{
+  "hooks": {
+    "Notification": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.claude/notify.sh\""
+          }
+        ]
+      }
+    ],
+    "Stop": [
+      {
+        "matcher": "",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "\"$HOME/.claude/notify.sh\""
+          }
+        ]
+      }
+    ]
+  },
+  "effortLevel": "high",
+  "model": "opus"
+}
